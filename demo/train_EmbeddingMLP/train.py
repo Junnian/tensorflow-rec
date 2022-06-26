@@ -13,11 +13,12 @@ def get_feature_columns(data_config):
 	# 解析data_coinfig
 	categorical_column_list = data_config["categorical_column_list"]
 	numeric_bucket_column_list = data_config["numeric_bucket_column_list"]
+	embedding_column_list = data_config["embedding_column_list"]
 
 	# 准备feature_columns
 	feature_columns = []
 
-	for feature_col in categorical_column_list + numeric_bucket_column_list:
+	for feature_col in categorical_column_list + numeric_bucket_column_list + embedding_column_list:
 		feature_encoder = getattr(Feature_columns, feature_col["feature_type"])
 		column_name = feature_col.pop("column_name")
 		feature_columns.append(feature_encoder(None, column_name=column_name, **feature_col))
@@ -27,13 +28,17 @@ def get_feature_columns(data_config):
 def get_inputs(data_config):
 	categorical_column_list = data_config["categorical_column_list"]
 	numeric_bucket_column_list = data_config["numeric_bucket_column_list"]
+	embedding_column_list = data_config["embedding_column_list"]
 	categorical_features = [categorical_column["column_name"] for categorical_column in categorical_column_list]
 	numeric_features = [numeric_bucket_column["column_name"] for numeric_bucket_column in numeric_bucket_column_list]
+	embedding_features = [embedding_column["column_name"] for embedding_column in embedding_column_list]
+
 	feature2dtype = data_config["feature2dtype"]
+
 	# 准备inputs
 	inputs = {
 		feature: tf.keras.layers.Input(name=feature, shape=(), dtype=feature2dtype[feature]) for feature in
-		numeric_features + categorical_features
+		numeric_features + categorical_features + embedding_features
 	}
 	return inputs
 
