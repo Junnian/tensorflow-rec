@@ -4,6 +4,13 @@ import numpy as np
 
 class Feature_columns:
 
+	def embedding_column(self, column_name, **kwargs):
+		return tf.feature_column.embedding_column(
+			tf.feature_column.categorical_column_with_identity(
+				key=column_name,
+				num_buckets=kwargs["num_buckets"]),
+			kwargs["embedding_dim"])
+
 	# 数值列，可以自定义归一化方法
 	def numeric_column(self, column_name, normalizer_fn=None, **kwargs):
 		number = tf.feature_column.numeric_column(column_name, normalizer_fn=normalizer_fn)
@@ -94,7 +101,6 @@ if __name__ == "__main__":
 	print("=========================")
 
 	multi_category = feature_columns.multi_categorical_column("multi", num_buckets=50)
-
 	feature_dict = {"multi": [[4, 5, 7, 10], [1, 2, 9, 30], [0, 1, 2, 3]]}  # 必须是大于等于0的数，不能是负数
 	feature_layer = tf.keras.layers.DenseFeatures(multi_category)
 	output = feature_layer(feature_dict)

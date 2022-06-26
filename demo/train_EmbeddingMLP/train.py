@@ -1,7 +1,7 @@
 from model_utils.feature_columns import Feature_columns
 import tensorflow as tf
 from config import data_config, model_config
-from model.FM import FM
+from model.EmbeddingMLP import EmbeddingMLP
 
 # 设置显存使用按需增长
 gpus = tf.config.experimental.list_physical_devices('GPU')
@@ -60,7 +60,7 @@ if __name__ == "__main__":
 	val_ds = get_datasets(data_config, "test")
 
 	# 解析model_config
-	latent_feature_dim = model_config["latent_feature_dim"]
+	hidden_dim = model_config["hidden_dim"]
 	lr = model_config["learn_rate"]
 	epochs = model_config["epochs"]
 	patience = model_config["patience"]
@@ -69,7 +69,7 @@ if __name__ == "__main__":
 	# build model
 	inputs = get_inputs(data_config)
 	feature_columns = get_feature_columns(data_config)
-	model = FM(inputs, feature_columns, latent_feature_dim=latent_feature_dim)
+	model = EmbeddingMLP(inputs, feature_columns, hidden_dim=hidden_dim)
 	model.compile_model(lr)
 	# train model
 	model.train(data=train_ds, val_data=val_ds, epochs=epochs, patience=patience, model_file_path=model_save_path)

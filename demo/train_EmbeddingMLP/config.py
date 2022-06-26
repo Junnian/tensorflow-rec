@@ -1,4 +1,4 @@
-from feature_config import numerical_features, categorical_features
+from feature_config import numerical_features, categorical_features, embedding_features
 import tensorflow as tf
 from utils.utils import read_pickle
 
@@ -8,9 +8,9 @@ for gpu in gpus:
 	tf.config.experimental.set_memory_growth(gpu, True)
 
 # 载入准备的文件
-feature2buckets = read_pickle("./data/feature2buckets.pickle")
-# feature2bin = read_pickle("/home/support/cjn/project/recommend_research/auto_homepage_feeds/model/tensorflow-FM//utils/feature2bin-7.pickle")
-feature2dtype = read_pickle("./data/feature2type.pickle")
+feature2buckets = read_pickle("../../data/feature2buckets.pickle")
+# feature2bin = read_pickle("/home/support/cjn/project/recommend_research/auto_homepage_feeds/model/tensorflow-trian_FM//utils/feature2bin-7.pickle")
+feature2dtype = read_pickle("../../data/feature2type.pickle")
 
 # 配置feature_columns
 # 具体配置的参数可以看 model_utils.feature_columns的方法的参数
@@ -31,24 +31,42 @@ numeric_column_list = [
 	} for feature in numerical_features
 ]
 
+embdding_dim = {
+	"movieId":1001,
+	"userId": 30001
+}
+embedding_column_list = [
+	{
+		"column_name": feature,
+		"feature_type": "embedding_column",
+		"num_buckets": embdding_dim[feature],
+		"embedding_dim": 10
+	} for feature in embedding_features
+]
+
+
 data_config = {
 	"batch_size": 128,
 	"label_name": "rating",
 	"shuffle": 1,
 	"categorical_column_list": categorical_column_list,
 	"numeric_bucket_column_list": numeric_column_list,
+	"embedding_column_list": embedding_column_list,
 	"feature2buckets": feature2buckets,
 	"feature2dtype": feature2dtype,
-	"train_val_data_source": "./data/trainingSamples.csv",
-	"test_data_source": "./data/testSamples.csv"
+	"train_val_data_source": "../../data/trainingSamples.csv",
+	"test_data_source": "../../data/testSamples.csv"
 }
 
 # 配置模型相关配置增加
 model_config = {
-	"latent_feature_dim": 10,
+	"hidden_dim": 10,
 	"learn_rate": 0.001,
 	"epochs": 100,
 	"patience": 10,
 	"model_id": "demo",  # model_name + feature
-	"model_save_path": "./ckpt/demo"
+	"model_save_path": "../../ckpt/demo"
 }
+
+if __name__=="__main__":
+	print(feature2dtype)
