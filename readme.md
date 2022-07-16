@@ -4,7 +4,8 @@
 2. feature2buckets.pickle: 需要分桶的类别特征对应的词表
 3. feature2bin.pickle: 需要分桶的数值特征的对应的边界
 
-
+# 参考
+> https://github.com/wzhe06/SparrowRecSys
 ```python
 import os
 import pickle
